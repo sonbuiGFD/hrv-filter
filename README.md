@@ -136,7 +136,29 @@ Plugin filter list product for haravan
 </ul>
 ```
 
-##### block filter option
+###### custom option
+
+```sh
+    <ul filter-sections>
+        {% assign list_size = settings.shop_by_size_list | split: ',' %}
+        {% for size in list_size %}
+        <li>
+            <input
+                id="filer-size-{{ forloop.index }}"
+                type="checkbox"
+                name="filer-size-{{ forloop.index }}"
+                value="(variant:product**{{ size }})"
+                filter-option
+                data-label="{{ size }}"
+                data-id="filer-size-{{ forloop.index }}"
+            >
+            <label for="filer-size-{{ forloop.index }}">{{ size }}</label>
+        </li>
+        {% endfor %}
+    </ul>
+```
+
+##### block sortby option
 
 ```sh
 <select filter-sortby>
@@ -231,5 +253,3 @@ Plugin filter list product for haravan
 
 </div>
 ```
-
-**done**
