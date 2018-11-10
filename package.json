@@ -1,0 +1,32 @@
+{
+  "name": "hrv-filter",
+  "version": "1.0.1",
+  "description": "Plugin filter list product for haravan",
+  "main": "dist/hrv.autocomplete.min.js",
+  "scripts": {
+    "lint": "standard --fix \"src/**/*.js\"",
+    "build:css": "cssnano src/hrv.filter.css dist/hrv.filter.min.css",
+    "build:js": "uglifyjs src/hrv.filter.js -cm -o dist/hrv.filter.min.js",
+    "build": "yarn build:js && yarn build:css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonbuiGFD/hrv-filter.git"
+  },
+  "keywords": [
+    "autocomplete",
+    "haravan",
+    "search"
+  ],
+  "author": "son_bui_",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sonbuiGFD/hrv-filter/issues"
+  },
+  "homepage": "https://github.com/sonbuiGFD/hrv-filter/blob/master/README.md",
+  "devDependencies": {
+    "cssnano-cli": "^1.0.5",
+    "standard": "^10.0.2",
+    "uglify-js": "^3.0.22"
+  }
+}
