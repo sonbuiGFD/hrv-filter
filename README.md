@@ -2,10 +2,10 @@
 
 Plugin filter list product for haravan
 
-**include file hrv.fitler.min.js before close body tag**
+**include file hrv.filter.min.js before close body tag**
 
 ```sh
-{{ 'hrv.fitler.min.js' | asset_url | script_tag }}
+{{ 'hrv.filter.min.js' | asset_url | script_tag }}
 ```
 
 **Create file search.data.liquid and search.pagesize.liquid**
