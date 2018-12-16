@@ -12,7 +12,7 @@ Plugin filter list product for haravan
 
 ```sh
 {% layout none %}
-<ul>
+<ul data-filter-size="{{ search.results.size }}">
 {% for product in search.results %}
     <div class="product-grid-item">
     ...
@@ -33,13 +33,17 @@ Plugin filter list product for haravan
 ```sh
 {% paginate collection.products by settings.collections_page_limit %}
     <div class="container"
-        data-filter
+        data-filter-nod
         data-current-page="{{paginate.current_page}}"
         data-page-size="{{paginate.pages}}"
         data-id="{{collection.id}}"
         data-handle="{{collection.handle}}"
         data-view="datagrid"
         data-view-page-size="pagesize"
+        data-sidebar="#sidebar-block"
+
+        data-sidebar="#sidebar-block" (options) // assign a difference sidebar
+        data-type="blogid:article" (options) // change target filter to article
     >
     ...
     </div>
@@ -252,4 +256,21 @@ Plugin filter list product for haravan
 {% endif %}
 
 </div>
+```
+
+##### block for filter results
+
+```sh
+<div class="collection-sidebar-count"> <span filter-results-size>...</span> kết quả hiển thị</div>
+```
+
+##### block for keyword filter
+
+```sh
+    <div class="form-group pos-relative">
+        <input filter-query type="text" class="form-control" placeholder="Nhập từ khóa">
+        <button filter-trigger class="btn btn-search">
+            <img src="{{ 'search-icon.png' | asset_url}}" alt="img-search" />
+        </button>
+    </div>
 ```

@@ -1,5 +1,5 @@
 (function($, window) {
-  var pluginName = "filter";
+  var pluginName = "filter-nod";
   function Plugin(element, options) {
     this.element = $(element);
     this.options = $.extend(
@@ -21,14 +21,31 @@
 
     this.id = this.element.data("id");
     this.handle = this.element.data("handle");
+		this.type = this.element.data("type") || 'collectionid:product';
     this.viewData = this.element.data("view");
     this.viewPagesize = this.element.data("viewPageSize");
+
+    this.sidebar = this.element.data("sidebar");
+	
+
     this.query = "";
 
+		this.resultsSize = this.element.find("[filter-results-size]");
+		this.searchQuery = this.element.find("[filter-query]");
+		this.q = "";
+		this.trigger = this.element.find("[filter-trigger]");
+
+	if(this.sidebar && this.sidebar !== '') {
+			this.sections = $(this.sidebar).find("[filter-sections]");
+			this.searchQuery = $(this.sidebar).find("[filter-query]");
+			this.trigger = $(this.sidebar).find("[filter-trigger]");
+		}
+
+
     if (this.handle && this.handle !== "all") {
-      this.query = "/search?q=filter=((collectionid:product=" + this.id + ")";
+			this.query = "filter=(("+ this.type +"=" + this.id + ")";
     } else {
-      this.query = "/search?q=filter=((collectionid:product>=0)";
+			this.query = "filter=(("+ this.type +">=0)";
     }
     this.init();
   }
@@ -37,11 +54,13 @@
     init: function() {
       var that = this;
       var options = this.options;
-
+			
+			// trigger loadmore
       that.btnLoadMore.on("click", function() {
         that.loadmore();
       });
-
+			
+			//trigger change option
       that.sortby.on("change", function() {
         that.triggerFilter();
       });
@@ -51,17 +70,19 @@
         if (section.data("single")) {
           var checked = $(this).is(":checked");
           section.find("[filter-option]").prop("checked", false);
-          $(this).prop("checked", true);
+          $(this).prop("checked", checked);
         }
 
         that.triggerFilter();
       });
-
+			
+			// remove selected
       that.selected.on("click", ".filter-selected-remove", function() {
         var id = $(this).data("id");
         $("#" + id)
-          .prop("checked", false)
-          .trigger("change");
+          .prop("checked", false);
+
+          that.triggerFilter();
       });
 
       that.selected.on("click", ".filter-selected-clear", function() {
@@ -69,10 +90,22 @@
         that.triggerFilter();
       });
 
+			// trigger pagination
       that.element.on("click", "[filter-pagination]", function(e) {
         e.preventDefault();
         that.getProduct($(this).data("page") || 0);
       });
+
+			// update filter q
+			that.trigger.on('click', function() {
+				that.q = that.searchQuery.val() || "";
+				that.getProduct(0);
+			});
+			
+			that.searchQuery.on('blur', function() {
+				that.q = that.searchQuery.val() || "";
+				that.getProduct(0);
+			});
     },
 
     renderSelected: function() {
@@ -102,9 +135,11 @@
           "' >X</span> </div>";
       });
 
+				this.selected.removeClass("filtered");
       if (optionHtml !== "") {
+				this.selected.addClass("filtered");
         res =
-          optionHtml + '<button class="filter-selected-clear"> hủy </button>';
+          optionHtml + '<button class="filter-selected-clear"> Xóa hết </button>';
       }
 
       this.selected.html(res);
@@ -143,12 +178,14 @@
 
     getProduct: function(page) {
       var that = this;
-      var url =
+      var url = 
+				'/search?q=' +
+					(that.q && that.q !== '' ? (that.q + '&') : '') +
         that.genQuery() +
         "&view=" +
         that.viewData +
-        "&sortby=" +
-        that.sortby.val() +
+    		"&sortby=" + 
+				that.sortby.val() +
         "&page=" +
         page;
 
@@ -157,6 +194,8 @@
         method: "get",
         success: function(data) {
           that.container.html(data);
+					var size = that.container.find('[data-filter-size]').data('filterSize');
+					that.resultsSize.html(size)
         },
         error: function(err) {
           console.error("getProduct", err);
@@ -166,7 +205,9 @@
 
     getPageSize: function() {
       var that = this;
-      var url = that.genQuery() + "&view=" + that.viewPagesize;
+      var url = '/search?q=' + 
+					(that.q && that.q !== '' ? (that.q + '&') : '') +
+					that.genQuery() + "&view=" + that.viewPagesize;
 
       $.ajax({
         url: url,
@@ -195,11 +236,12 @@
         that.cur_page++;
 
         var url =
+					'/search?q=' +
+					(that.q && that.q !== '' ? (that.q + '&') : '') +
           that.genQuery() +
           "&view=" +
           that.viewData +
-          "&sortby=" +
-          that.sortby.val() +
+						that.sortby.length ?("&sortby=" + that.sortby.val()) : ''+
           "&page=" +
           that.cur_page;
 
